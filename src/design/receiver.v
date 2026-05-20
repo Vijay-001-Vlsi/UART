@@ -38,18 +38,19 @@ output reg rec_readyH,rec_busy
             ps<=ns;
         end
     always @(posedge b_clk or negedge sys_rst_l) begin
-        if(!sys_rst_l)
-            count <= 4'd0;
-        else begin
-            if(ps != ns)
-                count <= 4'd0;
-            else if(count == 4'd15)
-                count <= 4'd0;
-
-            else
-                count <= count + 1'b1;
-        end
-    end
+    if (!sys_rst_l)
+        count <= 4'd0;
+    else if (ps == idle && uart_REC_dataH)  // reset only while line high
+        count <= 4'd0;
+    else if (ps == data_r && ps != ns)      // reset only on data_r exit
+        count <= 4'd0;
+    else if (ps == stop_r && ps != ns)
+        count <= 4'd0;
+    else if (count == 4'd15)
+        count <= 4'd0;
+    else
+        count <= count + 1;
+end
 
 always @(posedge b_clk or negedge sys_rst_l) begin
         if(!sys_rst_l)
@@ -72,7 +73,7 @@ always @(posedge b_clk or negedge sys_rst_l) begin
         
      always @(*) begin
         case (ps)
-            idle:    ns = (~uart_REC_dataH)           ? start_r : idle;
+            idle:    ns = (~uart_REC_dataH && count==4'd5)           ? start_r : idle;
             start_r: ns = (count == 4'd15)            ? data_r  : start_r;
             data_r:  ns = (bit_count == 3'd7 && count == 4'd15) ? stop_r  : data_r;
             stop_r:  ns = (uart_REC_dataH && count == 4'd15)   ? idle    : stop_r;
