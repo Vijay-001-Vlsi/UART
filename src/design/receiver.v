@@ -100,12 +100,14 @@ always @(posedge b_clk or negedge sys_rst_l) begin
                     rec_busy   = 1'b1;
                 end
                 stop_r: begin
-                    rec_dataH  = store;   // latch full byte now
-                    if(uart_REC_dataH && count==15)begin
+                    if(count==5)
+                         rec_dataH  = store;   // latch full byte now
+                    if(uart_REC_dataH && count==13)begin
                         rec_readyH = 1'b1;   
                         rec_busy   = 1'b0;
- 
+                        ns=idle;
                     end
+                    
                 end
             endcase
         end

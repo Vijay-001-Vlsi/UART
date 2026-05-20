@@ -1,7 +1,8 @@
 `timescale 1ns / 1ps
-module top_module #(
+module top_mod #(
     parameter freq   = 100,
-    parameter b_rate = 2
+    parameter b_rate = 2,
+    parameter width=8
 )(
     input        sys_clk,
     input        sys_rst_l,
@@ -28,7 +29,7 @@ module top_module #(
     );
 
     // TX
-    tx u_tx (
+    tx  #(.width(width))u_tx(
         .b_clk          (b_clk),
         .sys_rst_l      (sys_rst_l),
         .xmitH          (xmitH),
@@ -48,7 +49,7 @@ module top_module #(
     );
 
     // RX - feed synchronised signal
-    rx u_rx (
+    rx  #(.width(width))u_rx(
         .b_clk          (b_clk),
         .sys_rst_l      (sys_rst_l),
         .uart_REC_dataH (temp2),

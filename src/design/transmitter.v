@@ -19,7 +19,6 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module tx #(parameter width=8)(
 input b_clk,sys_rst_l,
 input xmitH,
@@ -94,6 +93,8 @@ end
         xmit_doneH = 1'b0;
         if(count == 15 && i==7) 
             ns=stop;
+        else
+            ns=data_trans;
             end
   stop: begin
     uart_XMIT_dataH = 1'b1;
